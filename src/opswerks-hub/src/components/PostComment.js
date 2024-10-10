@@ -6,9 +6,10 @@ import axios from 'axios';
 const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState(post.comments || []);
-  const [likedByUser, setLikedByUser] = useState(false); 
+  const [likedByUser, setLikedByUser] = useState(false);
 
   useEffect(() => {
+    // Fetch updated comments whenever post id changes
     fetchComments(post.id).then((updatedComments) => {
       setComments(updatedComments || []);
     });
@@ -17,7 +18,7 @@ const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) =
   useEffect(() => {
     const fetchLikedPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/data/likedPosts'); 
+        const response = await axios.get('http://localhost:5000/api/data/likedPosts');
         const likedPosts = response.data;
 
         const currentUser = localStorage.getItem('loggedInUser');
@@ -42,11 +43,15 @@ const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) =
   const handleCommentSubmit = async () => {
     if (newComment.trim()) {
       const currentUser = localStorage.getItem('loggedInUser');
+      const currentUserEmail = currentUser ? JSON.parse(currentUser).email : 'Anonymous';
 
       const newCommentData = {
-        content: newComment,
-        email: currentUser ? JSON.parse(currentUser).email : 'Anonymous',
-        date: new Date().toISOString(),
+        "Post ID": post.id,
+        Username: currentUserEmail,
+        Title: "Comment", // You can modify this to fit your structure
+        Content: newComment,
+        Comments: "No replies",
+        date: new Date().toISOString(), // Adding the date property
       };
 
       const updatedComments = [...comments, newCommentData];
@@ -76,7 +81,12 @@ const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) =
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
+    const validDate = new Date(date);
+    if (isNaN(validDate.getTime())) {
+      return 'Invalid Date';
+    }
+
+    return validDate.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
       month: 'short',
@@ -144,16 +154,16 @@ const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) =
                       <User size={19} />
                     </div>
                     <p className="text-sm font-medium text-[#009368]">
-                      {comment.email ? comment.email.split('@')[0] : 'Anonymous'}
+                      {comment.Username ? comment.Username.split('@')[0] : 'Anonymous'}
                     </p>
                   </div>
 
                   <div className="mr-6 bg-white border border-gray-300 rounded-lg p-4 shadow-md">
                     <p className="text-sm text-[#5a5a5a] mb-1">
-                      {comment.content}
+                      {comment.Content}
                     </p>
                     <p className="text-xs text-gray-400">
-                      {formatDate(comment.date)}
+                      {formatDate(comment.date)}  {/* Displaying the date here */}
                     </p>
                   </div>
                 </div>

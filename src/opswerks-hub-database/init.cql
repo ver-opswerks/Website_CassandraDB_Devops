@@ -26,6 +26,6 @@ CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.posts (
   title TEXT,                
   content TEXT,               
   like INT,                   
-  comments FROZEN<LIST<TUPLE<TEXT, TEXT>>>
+  comments LIST<FROZEN<MAP<TEXT, TEXT>>>
 );
 
