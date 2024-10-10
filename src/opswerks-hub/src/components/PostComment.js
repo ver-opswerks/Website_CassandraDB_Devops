@@ -3,7 +3,7 @@ import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa';
 import { User } from 'lucide-react';
 import axios from 'axios';
 
-const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) => {
+const PostComment = ({ post, toggleLike, onClose, newPost, fetchComments }) => {
   const [newComment, setNewComment] = useState('');
   const [comments, setComments] = useState(post.comments || []);
   const [likedByUser, setLikedByUser] = useState(false);

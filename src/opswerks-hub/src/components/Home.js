@@ -13,6 +13,7 @@ export default function Home() {
   const [isPostCreateOpen, setIsPostCreateOpen] = useState(false);
   const [posts, setPosts] = useState([]);
   const [currentUserEmail, setCurrentUserEmail] = useState(null);
+  const [newPost, setNewPost] = useState([]);
 
   // Fetch posts and liked posts when the component mounts
   useEffect(() => {
@@ -54,7 +55,6 @@ const fetchComments = async (postId) => {
     
     // Find the post with the matching postId from the fetched posts
     const post = response.data.find((p) => p.id === postId);
-    console.log('posts is ', post)
     
     if (post) {
       return post.comments;
@@ -144,9 +144,16 @@ const fetchComments = async (postId) => {
   const addNewPost = async (newPost) => {
     try {
       const response = await axios.post('http://localhost:5000/api/data/posts', newPost);
+  
+      console.log(newPost, "new post");
+      setNewPost(newPost);
+  
       if (response.status === 200) {
-        setPosts((prevPosts) => [newPost, ...prevPosts].sort((a, b) => b.id - a.id));
-        console.log('Post added successfully');
+        // Fetch the updated list of posts and update the state
+        const updatedPosts = await axios.get('http://localhost:5000/api/data/posts');
+        setPosts(updatedPosts.data.sort((a, b) => b.id - a.id));
+        
+        console.log('Post added and posts updated successfully');
       } else {
         console.error('Failed to add new post:', response.data);
       }
@@ -154,6 +161,8 @@ const fetchComments = async (postId) => {
       console.error('Error adding new post:', error);
     }
   };
+  
+
 
   const addComment = async (postId, newComment) => {
     try {
@@ -235,7 +244,7 @@ const fetchComments = async (postId) => {
           onClose={closeOverlay}
           likedPosts={likedPosts}
           toggleLike={toggleLike}
-          addComment={addComment}
+          newPostSent={newPost}
           fetchComments={fetchComments}  
         />
       )}
