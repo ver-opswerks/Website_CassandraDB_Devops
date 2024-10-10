@@ -51,10 +51,11 @@ const fetchComments = async (postId) => {
   try {
     // Fetch all posts from the backend
     const response = await axios.get('http://localhost:5000/api/data/posts');
-
+    
     // Find the post with the matching postId from the fetched posts
     const post = response.data.find((p) => p.id === postId);
-
+    console.log('posts is ', post)
+    
     if (post) {
       return post.comments;
     } else {

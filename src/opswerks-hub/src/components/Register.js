@@ -33,9 +33,13 @@ export default function RegisterPage() {
         return;
       }
     } catch (error) {
-      console.error('Error checking email:', error);
-      setErrorMessage('Error checking email. Please try again.');
-      return;
+      if (error.response && error.response.status === 404) {
+        console.log('No users found. Continuing with registration...');
+      } else {
+        console.error('Error checking email:', error);
+        setErrorMessage('Error checking email. Please try again.');
+        return;
+      }
     }
 
     // Password validation

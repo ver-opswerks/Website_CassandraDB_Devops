@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // Cassandra connection setup
 const client = new cassandra.Client({
-  contactPoints: ['localhost'],  
+  contactPoints: ['127.0.1.1'],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
   keyspace: 'opswerkshubkeyspace', 
 });
@@ -26,7 +26,7 @@ client.connect((err) => {
 
 
 app.use(cors({
-  origin: 'http://localhost',  
+  origin: ['http://localhost', 'http://localhost:3000', 'http://localhost:5000'],  
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 

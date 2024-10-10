@@ -63,6 +63,8 @@ const PostComment = ({ post, toggleLike, onClose, addComment, fetchComments }) =
           }),
         });
 
+        console.log(updatedComments);
+
         if (response.ok) {
           setComments(updatedComments);
           setNewComment('');

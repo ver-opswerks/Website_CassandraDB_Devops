@@ -14,17 +14,18 @@ CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.users (
 
 -- Create the liked_posts table
 CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.liked_posts (
-  postId UUID,
+  postId BIGINT,
   email TEXT,
   PRIMARY KEY (postId, email)
 );
 
 -- Create the posts table
 CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.posts (
-  id UUID PRIMARY KEY,
-  username TEXT,
-  title TEXT,
-  content TEXT,
-  like INT,
-  comments LIST<TEXT>
+  id BIGINT PRIMARY KEY,       
+  username TEXT,               
+  title TEXT,                
+  content TEXT,               
+  like INT,                   
+  comments FROZEN<LIST<TUPLE<TEXT, TEXT>>>
 );
+

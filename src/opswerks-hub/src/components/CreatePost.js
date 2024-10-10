@@ -24,10 +24,13 @@ const PostCreate = ({ onPostCreated, onClose }) => {
       like: 0,
       comments: [],
     };
+    console.log(newPost);
 
     try {
       // Send the new post data to the backend API
       await axios.post('http://localhost:5000/api/data/posts', newPost);
+
+      
 
       setTitle('');
       setContent('');
