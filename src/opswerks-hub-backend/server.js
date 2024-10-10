@@ -24,20 +24,35 @@ client.connect((err) => {
   }
 });
 
-// Check if frontend and backend are on the same origin
-const frontendUrl = 'http://localhost:3000'; 
-const backendUrl = `http://localhost:${port}`;
+async function connectToCassandra() {
+  let connected = false;
+  let attempts = 0;
+  const maxAttempts = 5;
+  
+  while (!connected && attempts < maxAttempts) {
+    try {
+      await cassandraClient.connect();
+      connected = true;
+      console.log('Connected to Cassandra');
+    } catch (error) {
+      console.log(`Failed to connect to Cassandra, attempt ${attempts + 1}`);
+      attempts += 1;
+      await new Promise(resolve => setTimeout(resolve, 3000)); // Retry every 5 seconds
+    }
+  }
 
-if (frontendUrl !== backendUrl) {
-  app.use(cors({
-    origin: frontendUrl,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], 
-    credentials: true, 
-  }));
-  console.log('CORS enabled for', frontendUrl);
-} else {
-  console.log('Same origin detected, CORS not required');
+  if (!connected) {
+    console.log('Failed to connect to Cassandra after several attempts');
+    process.exit(1); // Exit if the connection fails
+  }
 }
+
+connectToCassandra();
+
+app.use(cors({
+  origin: 'http://localhost',  
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+}));
 
 // Routes
 app.get('/', (req, res) => {
