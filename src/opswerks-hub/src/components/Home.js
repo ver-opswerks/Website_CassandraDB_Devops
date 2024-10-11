@@ -6,6 +6,7 @@ import { MessageCircle, User } from 'lucide-react';
 import PostComment from '../components/PostComment';
 import PostCreate from '../components/CreatePost';
 import axios from 'axios';
+import config from '../components/Config'; 
 
 export default function Home() {
   const [likedPosts, setLikedPosts] = useState([]);
@@ -19,7 +20,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/data/posts');
+        const response = await axios.get(`${config.apiBaseUrl}/api/data/posts`);
         setPosts(response.data.sort((a, b) => b.id - a.id));
       } catch (error) {
         console.error('Error fetching posts:', error);
@@ -28,7 +29,7 @@ export default function Home() {
 
     const fetchLikedPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/data/likedPosts');
+        const response = await axios.get(`${config.apiBaseUrl}/api/data/likedPosts`);
         setLikedPosts(response.data);
       } catch (error) {
         console.error('Error fetching liked posts:', error);
@@ -51,7 +52,7 @@ export default function Home() {
 const fetchComments = async (postId) => {
   try {
     // Fetch all posts from the backend
-    const response = await axios.get('http://localhost:5000/api/data/posts');
+    const response = await axios.get(`${config.apiBaseUrl}/api/data/posts`);
     
     // Find the post with the matching postId from the fetched posts
     const post = response.data.find((p) => p.id === postId);
@@ -92,7 +93,7 @@ const fetchComments = async (postId) => {
           prevLikedPosts.filter((like) => !(like.postid === postId && like.email === currentUserEmail))
         );
 
-        const response = await axios.delete('http://localhost:5000/api/data/likedPosts', {
+        const response = await axios.delete(`${config.apiBaseUrl}/api/data/likedPosts`, {
           data: {
             email: currentUserEmail,
             postId: postId,
@@ -109,7 +110,7 @@ const fetchComments = async (postId) => {
         const newLike = { postid: postId, email: currentUserEmail };
         setLikedPosts((prevLikedPosts) => [...prevLikedPosts, newLike]);
 
-        const response = await axios.post('http://localhost:5000/api/data/likedPosts', {
+        const response = await axios.post(`${config.apiBaseUrl}/api/data/likedPosts`, {
           email: currentUserEmail,
           postId: postId,
         });
@@ -143,14 +144,14 @@ const fetchComments = async (postId) => {
 
   const addNewPost = async (newPost) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/data/posts', newPost);
+      const response = await axios.post(`${config.apiBaseUrl}/api/data/posts`, newPost);
   
       console.log(newPost, "new post");
       setNewPost(newPost);
   
       if (response.status === 200) {
         // Fetch the updated list of posts and update the state
-        const updatedPosts = await axios.get('http://localhost:5000/api/data/posts');
+        const updatedPosts = await axios.get(`${config.apiBaseUrl}/api/data/posts`);
         setPosts(updatedPosts.data.sort((a, b) => b.id - a.id));
         
         console.log('Post added and posts updated successfully');
@@ -164,12 +165,12 @@ const fetchComments = async (postId) => {
   
 
 
-  const addComment = async (postId, newComment) => {
+  /*const addComment = async (postId, newComment) => {
     try {
       const post = posts.find((p) => p.id === postId);
       if (post) {
         const updatedPost = { ...post, comments: [...post.comments, newComment] };
-        await axios.put(`http://localhost:5000/api/data/posts/${postId}`, updatedPost);
+        await axios.put(`${config.apiBaseUrl}/api/data/posts/${postId}`, updatedPost);
         setPosts((prevPosts) =>
           prevPosts.map((post) => (post.id === postId ? updatedPost : post))
         );
@@ -177,7 +178,7 @@ const fetchComments = async (postId) => {
     } catch (error) {
       console.error('Error adding comment:', error);
     }
-  };
+  }; */
 
   return (
     <div>

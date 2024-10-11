@@ -172,6 +172,7 @@ const PostComment = ({ post, toggleLike, onClose, newPost, fetchComments }) => {
           </div>
         )}
 
+        {/* Comment input field should always be visible, placed below the comments section */}
         <div className="flex items-center justify-between p-4 bg-white border-t border-gray-300">
           <input
             type="text"

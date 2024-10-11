@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { User, PenSquare, LogOut } from 'lucide-react';
-import axios from 'axios'; 
+import axios from 'axios';
+import config from '../components/Config'; 
 
 const updateUserLogin = async (userEmail, loggedInStatus) => {
   try {
-    await axios.put('http://localhost:5000/api/data/users', {
+    await axios.put(`${config.apiBaseUrl}/api/data/users`, {  // Use config here
       email: userEmail,   
       loggedIn: loggedInStatus,  
     });
@@ -20,7 +21,7 @@ export default function Sidebar({ onPostCreateClick }) {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/data/users'); // Adjust the URL as needed
+        const response = await axios.get(`${config.apiBaseUrl}/api/data/users`);  // Use config here
         
         setUsers(response.data);
 
@@ -59,13 +60,15 @@ export default function Sidebar({ onPostCreateClick }) {
 
       localStorage.removeItem('loggedInUser');
 
-      window.location.href = '/login';  
+      window.location.href = '/';  
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
 
-  const userName = loggedInUser ? loggedInUser.email.split('@')[0] : 'Guest';
+  const capitalize = (name) => name.charAt(0).toUpperCase() + name.slice(1);
+  const userName = loggedInUser ? capitalize(loggedInUser.email.split('@')[0]) : 'Guest';
+
 
   return (
     <aside className="group fixed top-0 left-0 w-20 hover:w-3/12 bg-[#009368] flex flex-col items-center py-8 h-screen transition-all duration-300 pt-24">

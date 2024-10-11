@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import config from '../components/Config'; 
 
 const PostCreate = ({ onPostCreated, onClose }) => {
   const [title, setTitle] = useState('');
@@ -28,7 +29,7 @@ const PostCreate = ({ onPostCreated, onClose }) => {
 
     try {
       // Send the new post data to the backend API
-      await axios.post('http://localhost:5000/api/data/posts', newPost);
+      await axios.post(`${config.apiBaseUrl}/api/data/posts`, newPost);
 
       
 

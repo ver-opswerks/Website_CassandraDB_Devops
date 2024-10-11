@@ -4,6 +4,7 @@ import Banner from '../assets/Banner.png';
 import Header from './Header';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import config from '../components/Config'; 
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -17,7 +18,7 @@ export default function LoginPage() {
   // Fetch users from the database
   const getUsersFromDB = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/data/users');
+      const response = await axios.get(`${config.apiBaseUrl}/api/data/users`);
       return response.data;
     } catch (error) {
       console.error('Error fetching users:', error);
@@ -28,7 +29,7 @@ export default function LoginPage() {
   // Update user's login status in the database
   const updateUserLogin = async (userEmail, loggedInStatus) => {
     try {
-      await axios.put('http://localhost:5000/api/data/users', {
+      await axios.put(`${config.apiBaseUrl}/api/data/users`, {
         email: userEmail,   
         loggedIn: loggedInStatus,  
       });
@@ -76,7 +77,7 @@ export default function LoginPage() {
 
         await updateUserLogin(foundUser.email, true); 
 
-        navigate('/');
+        navigate('/home');
       } else {
         setError('Invalid email or password');
       }
@@ -154,7 +155,7 @@ export default function LoginPage() {
               </form>
             </div>
 
-            <div className="p-6 bg-gray-100">
+            <div className="p-6 bg-white-100">
               <button
                 type="submit"
                 className="w-full bg-[#009368] text-white hover:bg-[#007a56] py-2 px-6 rounded-md transition-transform transform"

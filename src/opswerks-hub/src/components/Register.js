@@ -4,6 +4,8 @@ import Banner from '../assets/Banner.png';
 import Header from './Header';
 import { Link } from 'react-router-dom';
 import axios from 'axios'; 
+import config from '../components/Config'; 
+
 export default function RegisterPage() {
   const [isRegistered, setIsRegistered] = useState(false); 
   const [email, setEmail] = useState(''); 
@@ -23,7 +25,7 @@ export default function RegisterPage() {
 
     // Check if email already exists in the database
     try {
-      const response = await axios.get(`http://localhost:5000/api/data/users`);
+      const response = await axios.get(`${config.apiBaseUrl}/api/data/users`);
       
       // Check if any user exists with the entered email
       const existingUser = response.data.find(user => user.email === email);
@@ -56,7 +58,7 @@ export default function RegisterPage() {
 
     // If all validations passed, proceed with registration
     try {
-      const response = await axios.post('http://localhost:5000/api/data/users', {
+      const response = await axios.post(`${config.apiBaseUrl}/api/data/users`, {
         email,
         password,
         loggedIn: false,
@@ -166,7 +168,7 @@ export default function RegisterPage() {
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-800 mb-2">Already have an account?</h2>
             <p className="text-gray-600 mb-4">Login to access your dashboard.</p>
-            <Link to="/login">
+            <Link to="/">
               <button className="bg-[#009368] text-white hover:bg-[#007a56] py-2 px-6 rounded-md transition-transform transform hover:scale-110">
                 Login
               </button>
@@ -181,7 +183,7 @@ export default function RegisterPage() {
           <div className="bg-white p-8 rounded-lg shadow-lg text-center">
             <h2 className="text-2xl font-bold text-gray-800 mb-4">Success!</h2>
             <p className="text-gray-600 mb-8">Your account has been successfully registered!</p>
-            <Link to="/login">
+            <Link to="/">
               <button className="bg-[#009368] text-white hover:bg-[#007a56] py-2 px-6 rounded-md transition-transform transform">
                 Go to Login
               </button>

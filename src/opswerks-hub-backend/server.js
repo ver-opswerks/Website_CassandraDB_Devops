@@ -1,29 +1,86 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const cassandra = require('cassandra-driver');
-const cors = require('cors'); 
+const cors = require('cors');
 
 const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
-// Cassandra connection setup
+// Cassandra connection setup (initially without keyspace)
 const client = new cassandra.Client({
   contactPoints: ['localhost'],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
-  keyspace: 'opswerkshubkeyspace', 
 });
 
-// Test Cassandra connection
-client.connect((err) => {
+// Keyspace and table creation queries
+const keyspaceQuery = `
+  CREATE KEYSPACE IF NOT EXISTS opswerkshubkeyspace 
+  WITH REPLICATION = {
+    'class': 'SimpleStrategy',
+    'replication_factor': 1
+  };
+`;
+
+const usersTableQuery = `
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.users (
+    email TEXT PRIMARY KEY,
+    password TEXT,
+    loggedIn BOOLEAN
+  );
+`;
+
+const likedPostsTableQuery = `
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.liked_posts (
+    postId BIGINT,
+    email TEXT,
+    PRIMARY KEY (postId, email)
+  );
+`;
+
+const postsTableQuery = `
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.posts (
+    id BIGINT PRIMARY KEY,
+    username TEXT,
+    title TEXT,
+    content TEXT,
+    like INT,
+    comments LIST<FROZEN<MAP<TEXT, TEXT>>>
+  );
+`;
+
+// Test Cassandra connection and initialize keyspace and tables
+client.connect(async (err) => {
   if (err) {
     console.error('Failed to connect to Cassandra:', err);
   } else {
-    console.log('Connected to Cassandra');
+    console.log('Connected to Cassandra without keyspace');
+
+    try {
+      // Create keyspace
+      await client.execute(keyspaceQuery);
+      console.log('Keyspace created/verified.');
+
+      // Switch to the newly created keyspace
+      client.keyspace = 'opswerkshubkeyspace'; // Now specify the keyspace
+
+      // Create tables after switching to the keyspace
+      await client.execute(usersTableQuery);
+      console.log('Users table created/verified.');
+
+      await client.execute(likedPostsTableQuery);
+      console.log('Liked Posts table created/verified.');
+
+      await client.execute(postsTableQuery);
+      console.log('Posts table created/verified.');
+
+      console.log('Database initiated successfully');
+    } catch (tableError) {
+      console.error('Error setting up database:', tableError);
+    }
   }
 });
-
 
 app.use(cors({
   origin: ['http://localhost', 'http://localhost:3000', 'http://localhost:5000'],  
