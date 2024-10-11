@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // Cassandra connection setup
 const client = new cassandra.Client({
-  contactPoints: ['127.0.1.1'],  
+  contactPoints: ['localhost'],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
   keyspace: 'opswerkshubkeyspace', 
 });

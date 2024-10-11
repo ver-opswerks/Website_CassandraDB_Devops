@@ -10,13 +10,13 @@ function App() {
     <Router>
       <Routes>
         {/* Login and Register Routes */}
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<Home />} />
         <Route path="/register" element={<Register />} />
         
         {/* Conditionally render the Home page based on isLoggedIn */}
         <Route
           path="/"
-          element={<Home/>}
+          element={<Login/>}
         />
       </Routes>
     </Router>
