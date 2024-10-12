@@ -10,7 +10,7 @@ app.use(bodyParser.json());
 
 // Cassandra connection setup (initially without keyspace)
 const client = new cassandra.Client({
-  contactPoints: ['localhost'],  
+  contactPoints: ['opswerks-hub-database-service'],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
 });
 
@@ -50,40 +50,62 @@ const postsTableQuery = `
   );
 `;
 
-// Test Cassandra connection and initialize keyspace and tables
-client.connect(async (err) => {
-  if (err) {
-    console.error('Failed to connect to Cassandra:', err);
-  } else {
+// Maximum number of connection attempts
+const MAX_ATTEMPTS = 5; 
+const RETRY_INTERVAL = 3000; 
+
+async function connectToCassandra(attempt = 1) {
+  try {
+    await client.connect();
     console.log('Connected to Cassandra without keyspace');
-
-    try {
-      // Create keyspace
-      await client.execute(keyspaceQuery);
-      console.log('Keyspace created/verified.');
-
-      // Switch to the newly created keyspace
-      client.keyspace = 'opswerkshubkeyspace'; // Now specify the keyspace
-
-      // Create tables after switching to the keyspace
-      await client.execute(usersTableQuery);
-      console.log('Users table created/verified.');
-
-      await client.execute(likedPostsTableQuery);
-      console.log('Liked Posts table created/verified.');
-
-      await client.execute(postsTableQuery);
-      console.log('Posts table created/verified.');
-
-      console.log('Database initiated successfully');
-    } catch (tableError) {
-      console.error('Error setting up database:', tableError);
+    
+    await setupDatabase();
+    
+  } catch (err) {
+    console.error(`Attempt ${attempt}: Failed to connect to Cassandra:`, err);
+    
+    if (attempt < MAX_ATTEMPTS) {
+      console.log(`Retrying in ${RETRY_INTERVAL / 1000} seconds...`);
+      setTimeout(() => connectToCassandra(attempt + 1), RETRY_INTERVAL);
+    } else {
+      console.error('Max attempts reached. Could not connect to Cassandra.');
+      process.exit(1); // Exit the process if all attempts fail
     }
   }
-});
+}
+
+// Function to set up the database
+async function setupDatabase() {
+  try {
+    // Create keyspace
+    await client.execute(keyspaceQuery);
+    console.log('Keyspace created/verified.');
+
+    client.keyspace = 'opswerkshubkeyspace'; 
+
+    await client.execute(usersTableQuery);
+    console.log('Users table created/verified.');
+
+    await client.execute(likedPostsTableQuery);
+    console.log('Liked Posts table created/verified.');
+
+    await client.execute(postsTableQuery);
+    console.log('Posts table created/verified.');
+
+    console.log('Database initiated successfully');
+  } catch (tableError) {
+    console.error('Error setting up database:', tableError);
+  }
+}
+
+connectToCassandra();
 
 app.use(cors({
-  origin: ['http://localhost', 'http://localhost:3000', 'http://localhost:5000'],  
+  origin: [
+    'http://localhost:3000',  // Local development
+    'http://opswerkshub.com',  // Your frontend domain
+    'http://opswerkshub.backend.com'  // Your backend domain
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
