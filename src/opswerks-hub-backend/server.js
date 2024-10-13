@@ -17,7 +17,7 @@ const client = new cassandra.Client({
 
 // Keyspace and table creation queries
 const keyspaceQuery = `
-  CREATE KEYSPACE IF NOT EXISTS opswerkshubkeyspace 
+  CREATE KEYSPACE IF NOT EXISTS opswerkshubkeyspace_dev
   WITH REPLICATION = {
     'class': 'SimpleStrategy',
     'replication_factor': 1
@@ -25,7 +25,7 @@ const keyspaceQuery = `
 `;
 
 const usersTableQuery = `
-  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.users (
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace_dev.users (
     email TEXT PRIMARY KEY,
     password TEXT,
     loggedIn BOOLEAN
@@ -33,7 +33,7 @@ const usersTableQuery = `
 `;
 
 const likedPostsTableQuery = `
-  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.liked_posts (
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace_dev.liked_posts (
     postId BIGINT,
     email TEXT,
     PRIMARY KEY (postId, email)
@@ -41,7 +41,7 @@ const likedPostsTableQuery = `
 `;
 
 const postsTableQuery = `
-  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.posts (
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace_dev.posts (
     id BIGINT PRIMARY KEY,
     username TEXT,
     title TEXT,
@@ -82,7 +82,7 @@ async function setupDatabase() {
     await client.execute(keyspaceQuery);
     console.log('Keyspace created/verified.');
 
-    client.keyspace = 'opswerkshubkeyspace'; 
+    client.keyspace = 'opswerkshubkeyspace_dev'; 
 
     await client.execute(usersTableQuery);
     console.log('Users table created/verified.');
@@ -102,7 +102,7 @@ async function setupDatabase() {
 connectToCassandra();
 
 // CORS configuration
-const corsOrigin = 'http://172.104.37.61:80'; // External ip of the frontend with protocol and port
+const corsOrigin = 'http://172.104.38.128:80'; // External ip of the frontend with protocol and port
 app.use(cors({
   origin: corsOrigin.split(','), // Split to allow multiple origins from comma-separated string
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
