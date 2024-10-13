@@ -12,9 +12,12 @@ function App() {
   useEffect(() => {
     const checkBackendConnection = async () => {
       try {
-        const response = await axios.get(`${config.apiBaseUrl}`);
+        const response = await axios.get(`${config.apiBaseUrl}/`);
         setBackendStatus(response.data); 
-        console.log('Connected to backend. ', config.apiBaseUrl);
+        const response2 = await axios.get(`${config.apiBaseUrl}/api/try`);
+        setBackendStatus(response2.data); 
+        console.log('Connected to backend1. ', config.apiBaseUrl , response.data);
+        console.log('Connected to backend2. ', config.apiBaseUrl , response2.data);
       } catch (error) {
         console.error('Error connecting to the backend:', error);
         setBackendStatus('Failed to connect to the backend.');

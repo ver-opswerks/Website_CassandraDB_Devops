@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
 // Cassandra connection setup
-const cassandraHost = '10.128.193.130:9042';
+const cassandraHost = 'opswerks-hub-database-service'; // Internal ip name of the database
 const client = new cassandra.Client({
   contactPoints: [cassandraHost],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
@@ -52,8 +52,8 @@ const postsTableQuery = `
 `;
 
 // Maximum number of connection attempts
-const MAX_ATTEMPTS = 5; 
-const RETRY_INTERVAL = 3000; 
+const MAX_ATTEMPTS = 10; 
+const RETRY_INTERVAL = 5000; 
 
 async function connectToCassandra(attempt = 1) {
   try {
@@ -102,7 +102,7 @@ async function setupDatabase() {
 connectToCassandra();
 
 // CORS configuration
-const corsOrigin = '172.104.37.61:80'; // Fallback to localhost
+const corsOrigin = 'http://172.104.37.61:80'; // External ip of the frontend with protocol and port
 app.use(cors({
   origin: corsOrigin.split(','), // Split to allow multiple origins from comma-separated string
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -111,6 +111,10 @@ app.use(cors({
 // Routes
 app.get('/', (req, res) => {
   res.send('Hello from the backend!');
+});
+
+app.get('/api/try', (req, res) => {
+  res.send('Hi from the backend!');
 });
 
 app.post('/api/data/users', async (req, res) => {
