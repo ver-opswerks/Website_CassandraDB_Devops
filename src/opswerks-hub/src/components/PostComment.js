@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaHeart, FaRegHeart, FaComment } from 'react-icons/fa';
 import { User } from 'lucide-react';
 import axios from 'axios';
+import config from '../components/Config'; 
 
 const PostComment = ({ post, toggleLike, onClose, newPost, fetchComments }) => {
   const [newComment, setNewComment] = useState('');
@@ -18,7 +19,7 @@ const PostComment = ({ post, toggleLike, onClose, newPost, fetchComments }) => {
   useEffect(() => {
     const fetchLikedPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/data/likedPosts');
+        const response = await axios.get(`${config.apiBaseUrl}/api/data/likedPosts`);
         const likedPosts = response.data;
 
         const currentUser = localStorage.getItem('loggedInUser');
@@ -57,7 +58,7 @@ const PostComment = ({ post, toggleLike, onClose, newPost, fetchComments }) => {
       const updatedComments = [...comments, newCommentData];
 
       try {
-        const response = await fetch(`http://localhost:5000/api/data/posts`, {
+        const response = await fetch(`${config.apiBaseUrl}/api/data/posts`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

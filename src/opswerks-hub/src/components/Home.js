@@ -188,47 +188,49 @@ const fetchComments = async (postId) => {
         <div className="h-screen flex flex-col mt-16 w-screen">
           <main className="flex-1 p-8">
             <div className="max-w-3xl mx-auto space-y-6">
-              {posts.map((post) => (
-                <div key={post.id} className="bg-gray-100 shadow-lg rounded-lg overflow-hidden border border-gray-300 mt-6">
-                  <div className="flex items-center space-x-4 bg-white p-4">
-                    <div className="flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full text-black-500">
-                      <User size={24} />
+              {posts.map((post) => {
+                return (
+                  <div key={post.id} className="bg-gray-100 shadow-lg rounded-lg overflow-hidden border border-gray-300 mt-6">
+                    <div className="flex items-center space-x-4 bg-white p-4">
+                      <div className="flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full text-black-500">
+                        <User size={24} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-[#2B2B2B]">{post.username}</p>
+                        <h2 className="text-xl font-semibold text-[#009368]">{post.title}</h2>
+                      </div>
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-[#2B2B2B]">{post.username}</p>
-                      <h2 className="text-xl font-semibold text-[#009368]">{post.title}</h2>
+                    <div className="p-4">
+                      <p className="text-[#2B2B2B]">{post.content}</p>
+                    </div>
+                    <div className="flex justify-start space-x-4 p-4 bg-white">
+                      <button
+                        className="flex items-center space-x-1 text-[#009368] hover:text-[#00805c] transition-transform transform hover:scale-110"
+                        onClick={() => toggleLike(post.id)}
+                      >
+                        {hasUserLikedPost(post.id) ? (
+                          <FaHeart size={20} />
+                        ) : (
+                          <FaRegHeart size={20} />
+                        )}
+                        <span className="text-sm">Like</span>
+                      </button>
+                      <button
+                        className="flex items-center space-x-1 text-[#009368] hover:text-[#00805c] transition-transform transform hover:scale-110"
+                        onClick={() => openOverlay(post)}
+                      >
+                        <MessageCircle size={20} />
+                        <span className="text-sm">Comment</span>
+                      </button>
                     </div>
                   </div>
-                  <div className="p-4">
-                    <p className="text-[#2B2B2B]">{post.content}</p>
-                  </div>
-                  <div className="flex justify-start space-x-4 p-4 bg-white">
-                    <button
-                      className="flex items-center space-x-1 text-[#009368] hover:text-[#00805c] transition-transform transform hover:scale-110"
-                      onClick={() => toggleLike(post.id)}
-                    >
-                      {hasUserLikedPost(post.id) ? (
-                        <FaHeart size={20} />
-                      ) : (
-                        <FaRegHeart size={20} />
-                      )}
-                      <span className="text-sm">Like</span>
-                    </button>
-                    <button
-                      className="flex items-center space-x-1 text-[#009368] hover:text-[#00805c] transition-transform transform hover:scale-110"
-                      onClick={() => openOverlay(post)}
-                    >
-                      <MessageCircle size={20} />
-                      <span className="text-sm">Comment</span>
-                    </button>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </main>
         </div>
       </div>
-
+  
       {isPostCreateOpen && (
         <PostCreate
           onPostCreated={(newPost) => {
@@ -237,7 +239,7 @@ const fetchComments = async (postId) => {
           onClose={closePostCreate}
         />
       )}
-
+  
       {activePost && (
         <PostComment
           post={activePost}
@@ -250,5 +252,5 @@ const fetchComments = async (postId) => {
         />
       )}
     </div>
-  );
+  );  
 }

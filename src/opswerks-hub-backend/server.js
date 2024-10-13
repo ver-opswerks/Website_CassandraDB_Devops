@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cassandra = require('cassandra-driver');
 const cors = require('cors');
+const { register, collectDefaultMetrics, Histogram } = require('prom-client');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -9,7 +10,7 @@ const port = process.env.PORT || 5000;
 app.use(bodyParser.json());
 
 // Cassandra connection setup
-const cassandraHost = '10.128.193.130:9042';
+const cassandraHost = 'opswerks-hub-database-service'; // Internal ip name of the database
 const client = new cassandra.Client({
   contactPoints: [cassandraHost],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
@@ -17,7 +18,7 @@ const client = new cassandra.Client({
 
 // Keyspace and table creation queries
 const keyspaceQuery = `
-  CREATE KEYSPACE IF NOT EXISTS opswerkshubkeyspace 
+  CREATE KEYSPACE IF NOT EXISTS opswerkshubkeyspace_dev
   WITH REPLICATION = {
     'class': 'SimpleStrategy',
     'replication_factor': 1
@@ -25,7 +26,7 @@ const keyspaceQuery = `
 `;
 
 const usersTableQuery = `
-  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.users (
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace_dev.users (
     email TEXT PRIMARY KEY,
     password TEXT,
     loggedIn BOOLEAN
@@ -33,7 +34,7 @@ const usersTableQuery = `
 `;
 
 const likedPostsTableQuery = `
-  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.liked_posts (
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace_dev.liked_posts (
     postId BIGINT,
     email TEXT,
     PRIMARY KEY (postId, email)
@@ -41,7 +42,7 @@ const likedPostsTableQuery = `
 `;
 
 const postsTableQuery = `
-  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace.posts (
+  CREATE TABLE IF NOT EXISTS opswerkshubkeyspace_dev.posts (
     id BIGINT PRIMARY KEY,
     username TEXT,
     title TEXT,
@@ -52,8 +53,8 @@ const postsTableQuery = `
 `;
 
 // Maximum number of connection attempts
-const MAX_ATTEMPTS = 5; 
-const RETRY_INTERVAL = 3000; 
+const MAX_ATTEMPTS = 10; 
+const RETRY_INTERVAL = 5000; 
 
 async function connectToCassandra(attempt = 1) {
   try {
@@ -82,7 +83,7 @@ async function setupDatabase() {
     await client.execute(keyspaceQuery);
     console.log('Keyspace created/verified.');
 
-    client.keyspace = 'opswerkshubkeyspace'; 
+    client.keyspace = 'opswerkshubkeyspace_dev'; 
 
     await client.execute(usersTableQuery);
     console.log('Users table created/verified.');
@@ -102,7 +103,7 @@ async function setupDatabase() {
 connectToCassandra();
 
 // CORS configuration
-const corsOrigin = '172.104.37.61:80'; // Fallback to localhost
+const corsOrigin = 'http://172.104.38.128:80'; // External ip of the frontend with protocol and port
 app.use(cors({
   origin: corsOrigin.split(','), // Split to allow multiple origins from comma-separated string
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -111,6 +112,10 @@ app.use(cors({
 // Routes
 app.get('/', (req, res) => {
   res.send('Hello from the backend!');
+});
+
+app.get('/api/try', (req, res) => {
+  res.send('Hi from the backend!');
 });
 
 app.post('/api/data/users', async (req, res) => {
@@ -336,6 +341,30 @@ app.delete('/api/data/posts', async (req, res) => {
     console.error('Error deleting post:', err);  
     res.status(500).send('Error deleting post'); 
   }
+});
+
+// Prometheus
+
+// Prometheus setup
+collectDefaultMetrics(); // Collect default metrics
+const httpRequestDurationMicroseconds = new Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'status'],
+});
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
+// Track request duration
+app.use((req, res, next) => {
+  const end = httpRequestDurationMicroseconds.startTimer();
+  res.on('finish', () => {
+    end({ method: req.method, route: req.path, status: res.statusCode });
+  });
+  next();
 });
 
 // Start the server

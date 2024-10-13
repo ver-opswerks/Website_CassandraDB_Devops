@@ -1,5 +1,5 @@
 const config = {
-    apiBaseUrl: '143.42.79.204:5000',
+    apiBaseUrl: 'http://172.104.38.128:80', // External ip of the frontend with protocol and port
   };
   
 export default config;
