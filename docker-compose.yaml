@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./src/opswerks-hub
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./src/opswerks-hub-backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - cassandra
+
+  cassandra:
+    build:
+      context: ./src/opswerks-hub-database
+      dockerfile: Dockerfile
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+
+volumes:
+  cassandra_data:

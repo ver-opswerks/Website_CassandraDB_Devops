@@ -1,0 +1,7 @@
+.md-header__title {
+  background-image: url("images/logo.png");
+  background-size: 100px 100px; /* Adjust size as needed */
+  background-repeat: no-repeat;
+  padding-left: 120px; /* Adjust based on logo size */
+}
+
