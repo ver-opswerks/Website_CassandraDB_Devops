@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cassandra = require('cassandra-driver');
 const cors = require('cors');
+const { register, collectDefaultMetrics, Histogram } = require('prom-client');
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -340,6 +341,30 @@ app.delete('/api/data/posts', async (req, res) => {
     console.error('Error deleting post:', err);  
     res.status(500).send('Error deleting post'); 
   }
+});
+
+// Prometheus
+
+// Prometheus setup
+collectDefaultMetrics(); // Collect default metrics
+const httpRequestDurationMicroseconds = new Histogram({
+  name: 'http_request_duration_seconds',
+  help: 'Duration of HTTP requests in seconds',
+  labelNames: ['method', 'route', 'status'],
+});
+
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
+});
+
+// Track request duration
+app.use((req, res, next) => {
+  const end = httpRequestDurationMicroseconds.startTimer();
+  res.on('finish', () => {
+    end({ method: req.method, route: req.path, status: res.statusCode });
+  });
+  next();
 });
 
 // Start the server
