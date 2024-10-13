@@ -37,3 +37,8 @@
     transform: rotate(360deg);
   }
 }
+
+/* Hide the first <p> element in the document */
+p:first-of-type {
+  display: none;
+}

@@ -14,7 +14,7 @@ function App() {
       try {
         const response = await axios.get(`${config.apiBaseUrl}`);
         setBackendStatus(response.data); 
-        console.log('Connected to backend.')
+        console.log('Connected to backend. ', config.apiBaseUrl);
       } catch (error) {
         console.error('Error connecting to the backend:', error);
         setBackendStatus('Failed to connect to the backend.');

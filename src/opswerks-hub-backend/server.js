@@ -8,9 +8,10 @@ const port = process.env.PORT || 5000;
 
 app.use(bodyParser.json());
 
-// Cassandra connection setup (initially without keyspace)
+// Cassandra connection setup
+const cassandraHost = '10.128.193.130:9042';
 const client = new cassandra.Client({
-  contactPoints: ['opswerks-hub-database-service'],  
+  contactPoints: [cassandraHost],  
   localDataCenter: 'datacenter1', // Keep as 'datacenter1'
 });
 
@@ -100,12 +101,10 @@ async function setupDatabase() {
 
 connectToCassandra();
 
+// CORS configuration
+const corsOrigin = '172.104.37.61:80'; // Fallback to localhost
 app.use(cors({
-  origin: [
-    'http://localhost:3000',  // Local development
-    'http://opswerkshub.com',  // Your frontend domain
-    'http://opswerkshub.backend.com'  // Your backend domain
-  ],
+  origin: corsOrigin.split(','), // Split to allow multiple origins from comma-separated string
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
 }));
 
