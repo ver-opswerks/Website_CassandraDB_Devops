@@ -1,0 +1,28 @@
+# Frontend (React - opswerks-hub)
+src/opswerks-hub/node_modules/
+src/opswerks-hub/build/
+src/opswerks-hub/.env
+src/opswerks-hub/*.log
+
+# Backend (Node.js/Express - opswerks-hub-backend)
+src/opswerks-hub-backend/node_modules/
+src/opswerks-hub-backend/npm-debug.log
+src/opswerks-hub-backend/yarn-debug.log
+src/opswerks-hub-backend/yarn-error.log
+src/opswerks-hub-backend/*.env
+src/opswerks-hub-backend/dist/
+src/opswerks-hub-backend/build/
+src/opswerks-hub-backend/coverage/
+
+# Miscellaneous
+*.log
+
+# VS Code
+.vscode/
+
+# OS specific files
+.DS_Store
+
+# Docker
+.docker/
+.docker-compose.yml
