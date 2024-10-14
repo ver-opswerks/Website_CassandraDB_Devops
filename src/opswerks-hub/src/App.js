@@ -5,6 +5,7 @@ import Home from './components/Home';
 import Login from './components/Login';
 import Register from './components/Register';
 import config from '../src/components/Config'; 
+import Admin from '../src/components/sampleAPICall';
 
 function App() {
   const [backendStatus, setBackendStatus] = useState('Checking connection...');
@@ -32,6 +33,7 @@ function App() {
           <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Login />} />
+          <Route path="/admin" element={<Admin />} />
         </Routes>
       </Router>
     </div>

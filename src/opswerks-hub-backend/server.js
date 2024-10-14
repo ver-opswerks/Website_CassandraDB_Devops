@@ -353,7 +353,7 @@ const httpRequestDurationMicroseconds = new Histogram({
   labelNames: ['method', 'route', 'status'],
 });
 
-app.get('/metrics', async (req, res) => {
+app.get('/api/metrics', async (req, res) => {
   res.set('Content-Type', register.contentType);
   res.end(await register.metrics());
 });
