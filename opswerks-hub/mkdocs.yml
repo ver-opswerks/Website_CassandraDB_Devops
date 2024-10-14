@@ -1,0 +1,32 @@
+site_name: OpsWerks Hub Case Study
+theme:
+  name: material  # Modern theme
+  palette:
+    primary: green
+    accent: lime  # You can adjust to lighter greens if needed
+  logo: images/opswerkslogo.png  # Add the logo here
+extra_css:
+  - extra.css
+markdown_extensions:
+  - toc:
+      permalink: true
+nav:
+  - Introduction: introduction.md 
+  - Target Audience: audience.md
+  - Solution Description: 
+      - Summary: solution.md
+      - Architecture Diagram: architecture.md
+  - Tools and Technologies: tools.md
+  - Workflow Visualization: workflow.md
+  - Features: features.md
+  - Runbooks:
+      - Pre-Requisites: prereq.md
+      - Installation:
+          - CassandraDB: cassandra.md
+          - Splunk:
+              - SplunkOperator: splunkoperator.md
+              - SplunkOTEL: splunkotel.md
+          - Prometheus: prometheus.md
+          - Jenkins: jenkins.md
+  - Conclusion: conclusion.md
+
