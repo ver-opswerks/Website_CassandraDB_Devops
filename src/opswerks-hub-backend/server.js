@@ -114,7 +114,7 @@ async function setupDatabase() {
 connectToCassandra();
 
 // CORS configuration
-const corsOrigin = 'http://172.104.38.128:80'; // External ip of the frontend with protocol and port
+const corsOrigin = 'http://139.144.127.77:80'; // External ip of the frontend with protocol and port
 app.use(cors({
   origin: corsOrigin.split(','), // Split to allow multiple origins from comma-separated string
   methods: ['GET', 'POST', 'PUT', 'DELETE'],

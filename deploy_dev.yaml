@@ -64,6 +64,8 @@ kind: Service
 metadata:
   name: opswerks-hub-service
   namespace: dev  
+  labels: 
+    frontend: opswerks-hub-frontend-service
 spec:
   type: LoadBalancer
   selector:
@@ -109,6 +111,8 @@ kind: Service
 metadata:
   name: opswerks-hub-backend-service
   namespace: dev  
+  labels: 
+    backend: opswerks-hub-backend-service
 spec:
   type: LoadBalancer
   selector:
