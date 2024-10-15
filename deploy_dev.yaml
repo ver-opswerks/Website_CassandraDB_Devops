@@ -1,18 +1,16 @@
----
-
-# Blue 
+# Blue Deployment for Development
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opswerks-hub-blue
-  namespace: dev 
+  namespace: dev
   labels:
     app: opswerks-hub
     version: blue
 spec:
-  replicas: 3
+  replicas: 1
   selector:
-    matchLabels:
+    matchLabels: 
       app: opswerks-hub
       version: blue
   template:
@@ -23,23 +21,25 @@ spec:
     spec:
       containers:
       - name: opswerks-hub
-        image: romeofrancobarro/opswerks-hub:latest
+        image: romeofrancobarro/opswerks-hub:dev
         ports:
         - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
 
 ---
 
-# Green 
+# Green Deployment for Development
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opswerks-hub-green
-  namespace: dev 
+  namespace: dev
   labels:
     app: opswerks-hub
     version: green
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: opswerks-hub
@@ -52,18 +52,20 @@ spec:
     spec:
       containers:
       - name: opswerks-hub
-        image: romeofrancobarro/opswerks-hub:latest
+        image: romeofrancobarro/opswerks-hub:dev
         ports:
         - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
 
 ---
 
-# Blue-Green Service
+# Blue-Green Service for Development
 apiVersion: v1
 kind: Service
 metadata:
   name: opswerks-hub-service
-  namespace: dev  
+  namespace: dev
   labels: 
     frontend: opswerks-hub-frontend-service
 spec:
@@ -75,18 +77,18 @@ spec:
   - port: 80
     targetPort: 80
 
-
 ---
 
+# Backend Deployment for Development
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opswerks-hub-backend
-  namespace: dev  # Added namespace here
+  namespace: dev
   labels:
     app: opswerks-hub-backend
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: opswerks-hub-backend
@@ -95,22 +97,26 @@ spec:
       labels:
         app: opswerks-hub-backend
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
       containers:
       - name: opswerks-hub-backend
-        image: romeofrancobarro/opswerks-hub-backend:latest
+        image: romeofrancobarro/opswerks-hub-backend:dev
         ports:
         - containerPort: 5000
         env:
         - name: NODE_ENV
-          value: "development" #production or development
+          value: "development"
+        
 
 ---
 
+# Backend Service for Development
 apiVersion: v1
 kind: Service
 metadata:
   name: opswerks-hub-backend-service
-  namespace: dev  
+  namespace: dev
   labels: 
     backend: opswerks-hub-backend-service
 spec:
@@ -123,16 +129,17 @@ spec:
 
 ---
 
+# Cassandra StatefulSet for Development
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: opswerks-hub-database
-  namespace: dev 
+  namespace: dev
   labels:
     app: opswerks-hub-database
 spec:
-  serviceName: opswerks-hub-database-service 
-  replicas: 3
+  serviceName: opswerks-hub-database-service
+  replicas: 1
   selector:
     matchLabels:
       app: opswerks-hub-database
@@ -148,34 +155,39 @@ spec:
         - containerPort: 9042
         env:
         - name: CASSANDRA_SEEDS
-          value: "opswerks-hub-database-0.opswerks-hub-database-service"
+          value: "opswerks-hub-database-0.opswerks-hub-database-service.dev.svc.cluster.local"
         - name: CASSANDRA_CLUSTER_NAME
           value: "OpsWerksHubDatabaseCluster"
         volumeMounts:
         - name: cassandra-data
           mountPath: /var/lib/cassandra
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
   volumeClaimTemplates:
   - metadata:
       name: cassandra-data
     spec:
-      accessModes:
+      accessModes: 
         - ReadWriteOnce
       resources:
         requests:
-          storage: 1Gi
+          memory: "8Mi"
+          cpu: "5m"
+        limits:
+          memory: "16Mi"
+          cpu: "10m"
 
 ---
 
 apiVersion: v1
 kind: Service
 metadata:
-  name: opswerks-hub-database-service  
-  namespace: dev  
+  name: opswerks-hub-database-service
+  namespace: dev
 spec:
-  clusterIP: None  
+  clusterIP: None
   selector:
-    app: opswerks-hub-database 
+    app: opswerks-hub-database
   ports:
   - port: 9042
     targetPort: 9042
-

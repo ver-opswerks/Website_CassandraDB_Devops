@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: sysctl
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: sysctl
+  template:
+    metadata:
+      labels:
+        app: sysctl
+    spec:
+      containers:
+      - name: sysctl
+        image: alpine:latest
+        command: ["/bin/sh", "-c", "sysctl -w vm.max_map_count=1048575"]
+        securityContext:
+          privileged: true
+      hostPID: true

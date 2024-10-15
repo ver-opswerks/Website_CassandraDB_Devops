@@ -10,7 +10,7 @@ metadata:
     app: opswerks-hub
     version: blue
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: opswerks-hub
@@ -23,9 +23,12 @@ spec:
     spec:
       containers:
       - name: opswerks-hub
-        image: romeofrancobarro/opswerks-hub:latest
+        image: romeofrancobarro/opswerks-hub:produ
         ports:
         - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
+
 
 ---
 
@@ -39,7 +42,7 @@ metadata:
     app: opswerks-hub
     version: green
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app: opswerks-hub
@@ -52,9 +55,12 @@ spec:
     spec:
       containers:
       - name: opswerks-hub
-        image: romeofrancobarro/opswerks-hub:latest
+        image: romeofrancobarro/opswerks-hub:produ
         ports:
         - containerPort: 80
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
+
 
 ---
 
@@ -64,6 +70,8 @@ kind: Service
 metadata:
   name: opswerks-hub-service
   namespace: prod  
+  labels: 
+    frontend: opswerks-hub-frontend-service
 spec:
   type: LoadBalancer
   selector:
@@ -83,7 +91,7 @@ metadata:
   labels:
     app: opswerks-hub-backend
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: opswerks-hub-backend
@@ -94,12 +102,14 @@ spec:
     spec:
       containers:
       - name: opswerks-hub-backend
-        image: romeofrancobarro/opswerks-hub-backend:latest
+        image: romeofrancobarro/opswerks-hub-backend:produ
         ports:
         - containerPort: 5000
         env:
         - name: NODE_ENV
-          value: "production"  # Changed to production
+          value: "production"
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
 
 ---
 
@@ -108,6 +118,8 @@ kind: Service
 metadata:
   name: opswerks-hub-backend-service
   namespace: prod
+  labels: 
+    backend: opswerks-hub-backend-service
 spec:
   type: LoadBalancer
   selector:
@@ -127,7 +139,7 @@ metadata:
     app: opswerks-hub-database
 spec:
   serviceName: opswerks-hub-database-service 
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: opswerks-hub-database
@@ -143,12 +155,14 @@ spec:
         - containerPort: 9042
         env:
         - name: CASSANDRA_SEEDS
-          value: "opswerks-hub-database-0.opswerks-hub-database-service"
+          value: "opswerks-hub-database-0.opswerks-hub-database-service.prod.svc.cluster.local"
         - name: CASSANDRA_CLUSTER_NAME
           value: "OpsWerksHubDatabaseCluster"
         volumeMounts:
         - name: cassandra-data
           mountPath: /var/lib/cassandra
+      nodeSelector:
+        kubernetes.io/hostname: "lke238246-370358-3d2bde670000"
   volumeClaimTemplates:
   - metadata:
       name: cassandra-data
@@ -157,7 +171,11 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          storage: 1Gi
+          memory: "8Mi"  
+          cpu: "5m"      
+        limits:
+          memory: "16Mi"  
+          cpu: "10m"
 
 ---
 
