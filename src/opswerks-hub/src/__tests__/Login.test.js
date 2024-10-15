@@ -8,7 +8,7 @@ import axios from 'axios';
 // Mock the axios module
 jest.mock('axios');
 
-jest.mock('../../opswerks-hub-backend/server.js', () => ({
+jest.mock('../../../opswerks-hub-backend/server.js', () => ({
     getUsersFromDB: jest.fn(),
   }));
 
