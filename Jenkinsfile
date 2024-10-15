@@ -6,7 +6,7 @@ pipeline {
         }
     }
     environment {
-        DOCKERHUB_USER = 'romeofrancobarro'
+        DOCKERHUB_USER = 'romefrancobarro'
         IMAGE_TAG = 'dev'  // Change to a specific version if needed, like 'v1.0'
     }
     stages {
@@ -37,26 +37,24 @@ pipeline {
                 }
             }
         }
+        stage('Run Frontend Unit Tests') {  // Modified stage for running frontend tests
+            steps {
+                script {
+                    // Run the frontend container, setting the working directory and executing npm test
+                    sh '''
+                        docker run --rm -w /app ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} npm test
+                    '''
+                }
+            }
+        }
         stage('Tag and Push Docker Images') {
             steps {
                 script {
                     def services = ['frontend', 'backend', 'cassandra']
                     for (service in services) {
                         def imageName = "${DOCKERHUB_USER}/${service}:${IMAGE_TAG}"
-                        sh "docker tag demo-run-${service}:latest ${imageName}"
+                        sh "docker tag test-${service}:latest ${imageName}"
                         sh "docker push ${imageName}"
-                    }
-                }
-            }
-        }
-        stage('Run Unit Tests') {
-            steps {
-                container('linux-container'){
-                    script{
-                        sh '''
-                            docker run --rm ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} /bin/sh -c "
-                            apk add --no-cache nodejs npm && npm test"
-                        '''
                     }
                 }
             }
