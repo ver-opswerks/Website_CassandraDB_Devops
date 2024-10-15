@@ -54,7 +54,7 @@ pipeline {
                 script {
                     // Run the frontend container, setting the working directory and executing npm test
                     sh '''
-                        docker run --rm -w /usr/share/nginx/html ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} /bin/sh -c "
+                        docker run --rm -w /app ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} /bin/sh -c "
                         apk add --no-cache nodejs npm && npm test -- --ci"
                     '''
                 }
