@@ -37,16 +37,6 @@ pipeline {
                 }
             }
         }
-        stage('Run Frontend Unit Tests') {  // Modified stage for running frontend tests
-            steps {
-                script {
-                    // Run the frontend container, setting the working directory and executing npm test
-                    sh '''
-                        docker run --rm -w /app ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} npm test
-                    '''
-                }
-            }
-        }
         stage('Tag and Push Docker Images') {
             steps {
                 script {
@@ -56,6 +46,16 @@ pipeline {
                         sh "docker tag test-${service}:latest ${imageName}"
                         sh "docker push ${imageName}"
                     }
+                }
+            }
+        }
+        stage('Run Frontend Unit Tests') {  // Modified stage for running frontend tests
+            steps {
+                script {
+                    // Run the frontend container, setting the working directory and executing npm test
+                    sh '''
+                        docker run --rm -w /app ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} npm test
+                    '''
                 }
             }
         }
