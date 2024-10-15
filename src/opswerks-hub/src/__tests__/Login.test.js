@@ -10,7 +10,7 @@ jest.mock('axios');
 
 jest.mock('../../../opswerks-hub-backend/server.js', () => ({
     getUsersFromDB: jest.fn(),
-  }));
+}));
 
 const mockUserData = [
     { id: 1, email: 'test@example.com', password: 'password123' },
