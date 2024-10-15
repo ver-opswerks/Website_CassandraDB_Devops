@@ -169,11 +169,11 @@ spec:
         - ReadWriteOnce
       resources:
         requests:
-          memory: "64Mi"  # Reduced memory request for dev
-          cpu: "50m"      # Reduced CPU request for dev
+          memory: "2Gi"  # Reduced memory request for dev
+          cpu: "1"      # Reduced CPU request for dev
         limits:
-          memory: "128Mi"  # Reduced memory limit for dev
-          cpu: "100m"
+          memory: "4Gi"  # Reduced memory limit for dev
+          cpu: "2"
  
 ---
  
