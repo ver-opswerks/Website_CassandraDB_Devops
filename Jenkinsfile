@@ -49,7 +49,7 @@ pipeline {
                 }
             }
         }
-        stage('Run Frontend Unit Tests') {  // Modified stage for running frontend tests
+        stage('Unit Tests') {  // Modified stage for running frontend tests
             steps {
                 script {
                     // Run the frontend container, setting the working directory and executing npm test
