@@ -8,7 +8,7 @@ metadata:
     app: opswerks-hub
     version: blue
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: opswerks-hub
@@ -84,7 +84,7 @@ metadata:
   labels:
     app: opswerks-hub-backend
 spec:
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: opswerks-hub-backend
@@ -139,7 +139,7 @@ metadata:
     app: opswerks-hub-database
 spec:
   serviceName: opswerks-hub-database-service
-  replicas: 2
+  replicas: 3
   selector:
     matchLabels:
       app: opswerks-hub-database
