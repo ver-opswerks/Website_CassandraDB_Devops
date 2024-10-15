@@ -49,6 +49,18 @@ pipeline {
                 }
             }
         }
+        stage('Run Unit Tests') {
+            steps {
+                container('linux-container'){
+                    script{
+                        sh '''
+                            docker run --rm ${DOCKERHUB_USER}/frontend:${IMAGE_TAG} /bin/sh -c "
+                            apk add --no-cache nodejs npm && npm test"
+                        '''
+                    }
+                }
+            }
+        }
         stage('Deploy to Kubernetes') {
             steps {
                 script {
