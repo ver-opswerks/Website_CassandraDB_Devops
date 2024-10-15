@@ -6,7 +6,7 @@ pipeline {
         }
     }
     environment {
-        DOCKERHUB_USER = 'romefrancobarro'
+        DOCKERHUB_USER = 'imalicatopswerks'
         IMAGE_TAG = 'dev'  // Change to a specific version if needed, like 'v1.0'
     }
     stages {
@@ -24,7 +24,7 @@ pipeline {
         stage('Docker Login') {
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'RomeoDocker', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhubCreds', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
                         sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     }
                 }
